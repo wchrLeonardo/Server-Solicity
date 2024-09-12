@@ -1,0 +1,39 @@
+# Ambiente virtual
+venv/
+env/
+
+# Arquivos do banco de dados
+
+
+# Arquivos de cache do Django
+**/__pycache__/
+**/*.py[cod]
+
+# Configurações de migrações (não necessárias em todos os cenários)
+**/migrations/
+
+# Arquivos de configurações do sistema operacional
+*.log
+*.pot
+*.pyc
+*.pyo
+*.swp
+*.swo
+*.coverage
+*.coverage.*
+
+# Arquivos de IDEs
+.idea/
+.vscode/
+
+# Arquivos de backup
+*.bak
+*.tmp
+*.orig
+
+# Arquivos de mídia e uploads
+media/
+staticfiles/
+
+# Arquivos de configurações de ambiente local
+.env
