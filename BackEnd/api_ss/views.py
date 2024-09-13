@@ -1,21 +1,62 @@
-from django.shortcuts import render
-from rest_framework import viewsets, generics, status
-from rest_framework.permissions import IsAuthenticated
-from .models import UserService
-from .serializers import UserSerializer
+from rest_framework import generics
+from .models import Empresa, Servico
+from .serializers import EmpresaSerializer, ServicoSerializer
+from rest_framework.generics import get_object_or_404
+from rest_framework import viewsets, mixins
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = UserService.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+# Generic Views
+# Plural -- EndPoints de coleção
+# Singular -- EndPoints de Individuo
+
+
+# ===================== API V1 ============================
+class EmpresasAPIView(generics.ListCreateAPIView):
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaSerializer
     
+class EmpresaAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaSerializer
+    
+class ServicosAPIView(generics.ListCreateAPIView):
+    queryset = Servico.objects.all()
+    serializer_class = ServicoSerializer
+
     def get_queryset(self):
-        return UserService.objects.filter(id=self.request.user.id)
+        if self.kwargs.get('curso_pk'):
+            return self.queryset.filter(empresa_id = self.kwargs.get('empresa_pk'))
+        return self.queryset.all()
     
-    def destroy(self, request, *args, **kwargs):
-        self.get_object().delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ServicoAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Servico.objects.all()
+    serializer_class = ServicoSerializer
+
+    def get_object(self):
+        if self.kwargs.get('empresa_pk'):
+            return get_object_or_404(self.get_queryset(), empresa_id=self.kwargs.get('empresa_pk'), pk=self.kwargs.get('servico_pk'))
+        return get_object_or_404(self.get_queryset(), pk=self.kwargs.get('servico_pk'))
     
-class CreateUserView(generics.CreateAPIView):
-    queryset = UserService.objects.all()
-    serializer_class = UserSerializer
+# =================== API V2 ================================
+
+class EmpresaViewSet(viewsets.ModelViewSet):
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaSerializer
+
+    @action(detail=True, methods=('get'))
+    def servicos(self, request, pk=None):
+        curso = self.get_object()
+        serializer = ServicoSerializer(empresa.servicos.all(), many=True)
+        return Response(serializer.data)
+
+'''VIEWSET PADRÃO:
+class ServicoViewSet(viewsets.ModelViewSet):
+    queryset = Servico.objects.all()
+    serializer_class = ServicoSerializer
+'''
+# VIEWSET CUSTOMIZADA:
+class ServicoViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = Servico.objects.all()
+    serializer_class = ServicoSerializer

@@ -10,7 +10,7 @@ env/
 **/*.py[cod]
 
 # Configurações de migrações (não necessárias em todos os cenários)
-**/migrations/
+# **/migrations/
 
 # Arquivos de configurações do sistema operacional
 *.log

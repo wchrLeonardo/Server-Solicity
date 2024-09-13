@@ -1,17 +1,33 @@
 from rest_framework import serializers
-from .models import UserService
+from .models import Empresa, Servico
 
-class UserSerializer(serializers.ModelSerializer):
+class EmpresaSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = UserService
-        fields = ['id', 'nome', 'email', 'senha']
-        extra_kwargs = {'senha': {'write_only': True}}
-        
-        def create(self, validated_data):
-            user = UserService.objects.create_user(
-                nome=validated_data['nome'],
-                email=validated_data['email'],
-                senha=validated_data['senha']
-            )
-            return user
+        model = Empresa
+        fields = [
+            'id',
+            'nome_empresa',
+            'cnpj_empresa',
+            'criacao',
+            'ativo',
+        ]
+
+class ServicoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        extra_kwargs = {
+            'nome_servico': {'write_only': True}
+        }
+        model = Servico
+        fields = [
+            'id',
+            'empresa',
+            'nome_servico',
+            'tipo_servico',
+            'codigo_servico',
+            'data_emissao_servico',
+        ]
+
+
         
