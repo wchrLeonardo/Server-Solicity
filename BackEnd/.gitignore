@@ -1,5 +1,5 @@
 # Ambiente virtual
-venv/
+venv_ss/
 env/
 
 # Arquivos do banco de dados
